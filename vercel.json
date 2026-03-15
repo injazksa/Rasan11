@@ -1,0 +1,7 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://rasan-platform-full.onrender.com/api/$1" },
+    { "source": "/(.*)", "destination": "/frontend/dist/$1" }
+  ]
+}
