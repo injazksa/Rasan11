@@ -12,9 +12,9 @@ cd frontend
 npm install --legacy-peer-deps
 cd ..
 
-echo "🔨 Building frontend..."
+echo "🔨 Building frontend with Vite..."
 cd frontend
-npm run build
+npx vite build
 cd ..
 
 echo "📁 Copying frontend build to public folder..."
