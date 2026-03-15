@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: rasan-platform-full
+    name: rasan-platform
     env: node
     plan: free
-    buildCommand: npm install --legacy-peer-deps && npm run build
+    buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV

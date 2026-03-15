@@ -40,7 +40,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Static Files (Frontend)
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, './public')));
 
 // Sovereignty Middleware (Country Isolation)
 const checkCountryIsolation = (req, res, next) => {
@@ -146,7 +146,7 @@ app.get('/api/admin/approvals', checkCountryIsolation, (req, res) => {
 
 // Serve Frontend for any other route
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+  res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
 app.use((req, res) => {
