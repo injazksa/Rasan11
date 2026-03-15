@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: rasan-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: rasan
+      MYSQL_USER: rasan_user
+      MYSQL_PASSWORD: rasan_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - rasan-network
+
+  backend:
+    build: ./backend
+    container_name: rasan-backend
+    environment:
+      DATABASE_URL: mysql://rasan_user:rasan_pass@mysql:3306/rasan
+      NODE_ENV: development
+      PORT: 5000
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mysql
+    networks:
+      - rasan-network
+
+  frontend:
+    build: ./frontend
+    container_name: rasan-frontend
+    environment:
+      VITE_API_URL: http://localhost:5000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - rasan-network
+
+volumes:
+  mysql_data:
+
+networks:
+  rasan-network:
+    driver: bridge
