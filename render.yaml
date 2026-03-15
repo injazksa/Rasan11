@@ -3,22 +3,26 @@ services:
     name: rasan-platform-full
     env: node
     plan: free
-    # إجبار Render على استخدام npm بدلاً من pnpm
     buildCommand: |
-      echo "Starting Build Process..."
-      # Build Frontend
+      # 1. Build Frontend
+      echo "--- Building Frontend ---"
       cd frontend
       npm install --legacy-peer-deps
       npm run build
       cd ..
       
-      # Setup Backend
+      # 2. Setup Backend
+      echo "--- Setting up Backend ---"
       cd backend
       npm install --legacy-peer-deps
+      
+      # 3. Copy Frontend to Backend Public
+      echo "--- Copying Frontend to Backend ---"
       mkdir -p public
+      rm -rf public/*
       cp -r ../frontend/dist/* public/
       cd ..
-      echo "Build Completed Successfully!"
+      echo "--- Build Finished ---"
     startCommand: cd backend && npm start
     envVars:
       - key: NODE_ENV
