@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build": "npm install --legacy-peer-deps && npx vite build",
+    "build": "chmod +x build.sh && ./build.sh",
     "start": "node server.js"
   },
   "dependencies": {
