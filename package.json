@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build": "npm install --legacy-peer-deps && cd frontend && npm install --legacy-peer-deps && npm run build && cd .. && mkdir -p public && rm -rf public/* && cp -r frontend/dist/* public/",
+    "build": "npm install --legacy-peer-deps && npx vite build",
     "start": "node server.js"
   },
   "dependencies": {
