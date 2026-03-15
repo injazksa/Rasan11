@@ -19,7 +19,9 @@ const JWT_SECRET = process.env.JWT_SECRET || 'rasan_secret_key';
 // ============ Middleware ============
 
 // Security
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false, // Disable CSP for easier deployment of mixed content if needed
+}));
 app.use(cors({
   origin: '*', // For development flexibility
   credentials: true
@@ -29,7 +31,7 @@ app.use(cors({
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
-  message: 'Too many requests from this IP, please try again later.'
+  message: { message: 'Too many requests from this IP, please try again later.' }
 });
 app.use('/api/', limiter);
 
@@ -42,7 +44,9 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 // Sovereignty Middleware (Country Isolation)
 const checkCountryIsolation = (req, res, next) => {
-  const token = req.headers['authorization'];
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Support "Bearer TOKEN"
+
   if (!token) return res.status(403).json({ message: "No token provided!" });
 
   jwt.verify(token, JWT_SECRET, (err, decoded) => {
@@ -65,15 +69,45 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Auth Routes (Integrated)
+// Auth Routes
 app.post('/api/auth/login', (req, res) => {
   const { email, password } = req.body;
+  
+  if (!email || !password) {
+    return res.status(400).json({ message: 'البريد الإلكتروني وكلمة المرور مطلوبان' });
+  }
+
   // Mock login for any user
-  const token = jwt.sign({ email, role: 'SUPER_ADMIN', country_code: 'ALL' }, JWT_SECRET, { expiresIn: '24h' });
-  res.json({ token, user: { email, role: 'SUPER_ADMIN', country_code: 'ALL' } });
+  const user = { 
+    email, 
+    role: email.includes('admin') ? 'SUPER_ADMIN' : 'OWNER', 
+    country_code: 'ALL' 
+  };
+  
+  const token = jwt.sign(user, JWT_SECRET, { expiresIn: '24h' });
+  res.json({ token, user });
 });
 
-// Horses Routes with Sovereignty Logic
+app.post('/api/auth/register', (req, res) => {
+  const { fullName, email, password, role } = req.body;
+
+  if (!email || !password || !fullName) {
+    return res.status(400).json({ message: 'جميع الحقول مطلوبة' });
+  }
+
+  // Mock registration
+  const user = { 
+    fullName,
+    email, 
+    role: role || 'OWNER', 
+    country_code: 'ALL' 
+  };
+  
+  const token = jwt.sign(user, JWT_SECRET, { expiresIn: '24h' });
+  res.status(201).json({ token, user });
+});
+
+// Horses Routes
 app.get('/api/horses', checkCountryIsolation, (req, res) => {
   res.json({ 
     message: 'Horses fetched with country isolation', 
@@ -116,13 +150,13 @@ app.get('*', (req, res) => {
 });
 
 app.use((req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+  res.status(404).json({ message: 'Route not found' });
 });
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(err.status || 500).json({
-    error: err.message || 'Internal Server Error'
+    message: err.message || 'Internal Server Error'
   });
 });
 
@@ -130,17 +164,15 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`
-╔════════════════════════════════════════╗
-║   منصة رَسَن - Rasan Platform         ║
-║   Backend Server Running              ║
-╚════════════════════════════════════════╝
+	╔════════════════════════════════════════╗
+	║   منصة رَسَن - Rasan Platform         ║
+	║   Backend Server Running              ║
+	╚════════════════════════════════════════╝
   
-  🚀 Server: http://localhost:${PORT}
-  📊 Health: http://localhost:${PORT}/health
+	  🚀 Server: http://localhost:${PORT}
+	  📊 Health: http://localhost:${PORT}/health
   
-  Environment: ${process.env.NODE_ENV || 'development'}
-  Database: ${process.env.DATABASE_URL ? 'Connected' : 'Not configured'}
-  
+	  Environment: ${process.env.NODE_ENV || 'production'}
   `);
 });
 

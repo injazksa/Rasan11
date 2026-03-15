@@ -15,7 +15,12 @@ const LoginPage = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      // استخدام مسار نسبي ليعمل على Render أو مسار كامل لـ localhost
+      const apiUrl = window.location.origin.includes('localhost') 
+        ? 'http://localhost:5000/api/auth/login' 
+        : '/api/auth/login';
+
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -23,15 +28,16 @@ const LoginPage = () => {
         body: JSON.stringify({ email, password })
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('فشل تسجيل الدخول');
+        throw new Error(data.message || 'فشل تسجيل الدخول');
       }
 
-      const data = await response.json();
       localStorage.setItem('rasan_token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       
-      // التوجيه إلى لوحة المدير للمسؤولين
+      // التوجيه بناءً على الدور
       if (data.user.role === 'SUPER_ADMIN') {
         navigate('/admin/approvals');
       } else {
@@ -55,7 +61,7 @@ const LoginPage = () => {
           </div>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm text-right">
               {error}
             </div>
           )}
