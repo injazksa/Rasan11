@@ -1,0 +1,13 @@
+{
+  "name": "rasan-platform-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install-all": "cd frontend && npm install --legacy-peer-deps && cd ../backend && npm install --legacy-peer-deps",
+    "build": "cd frontend && npm run build && cd ../backend && mkdir -p public && rm -rf public/* && cp -r ../frontend/dist/* public/",
+    "start": "cd backend && npm start"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
