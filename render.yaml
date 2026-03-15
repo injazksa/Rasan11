@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: rasan-platform-full
+    env: node
+    plan: free
+    buildCommand: |
+      cd frontend && npm install && npm run build && cd ..
+      cd backend && npm install && mkdir -p public && cp -r ../frontend/dist/* public/ && cd ..
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        value: rasan_secret_key_change_me
