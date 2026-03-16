@@ -118,205 +118,156 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#0f0f0f] flex items-center justify-center p-4 relative overflow-hidden" dir="rtl">
+    <div className="min-h-screen bg-[#FDFCFB] flex items-center justify-center p-4 relative overflow-hidden" dir="rtl">
       
       {/* Decorative Background Elements */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-[#D4AF37]/5 rounded-full blur-3xl"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#D4AF37]/5 rounded-full blur-3xl"></div>
 
       {/* Main Container */}
-      <div className="max-w-2xl w-full relative z-10">
+      <div className="max-w-5xl w-full relative z-10 bg-white rounded-[2.5rem] shadow-2xl flex flex-col md:flex-row overflow-hidden border border-[#D4AF37]/20">
         
-        {/* Regular Login Form */}
-        {!showAdminSecret && (
-          <div className="bg-[#1a1a1a] rounded-[3rem] shadow-2xl overflow-hidden border border-[#D4AF37]/20 backdrop-blur-sm">
-            <div className="p-12">
-              
-              {/* Logo Section */}
-              <div className="text-center mb-12">
-                <div 
-                  data-logo
-                  onClick={handleLogoClick}
-                  className="cursor-pointer transition-all duration-300 hover:scale-105 inline-block"
-                  title={`${logoClickCount}/7 نقرات سرية`}
-                >
-                  <img 
-                    src="/rasan_logo_v2.png?t=2026" 
-                    alt="Rasan Logo" 
-                    className="w-56 mx-auto mb-6 drop-shadow-2xl" 
-                  />
-                </div>
-                <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#D4AF37] tracking-widest mb-2">رَسَن</h1>
-                <p className="text-[#D4AF37] text-[11px] uppercase tracking-[0.4em] font-bold">السيادة الرقمية لعالم الفروسية</p>
-                <div className="mt-4 h-1 w-24 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto"></div>
-              </div>
+        {/* Left Side - Branding (Consistent with Register Page) */}
+        <div className="md:w-2/5 bg-[#FDFCFB] p-8 md:p-12 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-l border-[#D4AF37]/10">
+          <div 
+            data-logo
+            onClick={handleLogoClick}
+            className="cursor-pointer transition-all duration-300 hover:scale-105 inline-block"
+          >
+            <img 
+              src="/rasan_logo_v2.png?t=2026" 
+              alt="Rasan Logo" 
+              className="w-64 md:w-80 mb-8 drop-shadow-xl" 
+            />
+          </div>
+          <h2 className="text-3xl md:text-4xl font-serif mb-4 text-[#2C2C2C]">منظومة رَسَن</h2>
+          <p className="text-sm leading-relaxed text-[#D4AF37] font-medium uppercase tracking-[0.2em]">السيادة الرقمية لعالم الفروسية</p>
+          <div className="mt-12 w-16 h-1 bg-[#D4AF37]/30 rounded-full"></div>
+        </div>
 
-              {/* Error Message */}
+        {/* Right Side - Form */}
+        <div className="md:w-3/5 p-8 md:p-16 bg-white">
+          {!showAdminSecret ? (
+            <>
+              <div className="mb-10">
+                <h3 className="text-2xl md:text-3xl font-bold text-[#2C2C2C] mb-2">تسجيل الدخول</h3>
+                <p className="text-gray-500">مرحباً بك مجدداً في عالم الفروسية</p>
+              </div>
+              
               {error && (
-                <div className="mb-8 p-4 bg-red-950/40 border border-red-500/30 rounded-2xl text-red-400 text-sm text-right backdrop-blur-sm">
-                  <span className="font-bold">⚠️ </span>{error}
+                <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm text-right">
+                  {error}
                 </div>
               )}
 
-              {/* Login Form */}
               <form className="space-y-6" onSubmit={handleLogin}>
-                
-                {/* Email Input */}
-                <div className="relative group">
-                  <Mail className="absolute right-4 top-1/2 -translate-y-1/2 text-[#D4AF37]/60 group-focus-within:text-[#D4AF37] transition-colors" size={20} />
-                  <input 
-                    type="email" 
-                    placeholder="البريد الإلكتروني" 
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="w-full p-4 pr-14 bg-[#0a0a0a]/50 rounded-2xl border border-[#D4AF37]/20 outline-none focus:border-[#D4AF37] focus:ring-2 ring-[#D4AF37]/20 text-[#E0E0E0] text-right transition-all placeholder-gray-600" 
-                  />
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-gray-400 mr-2">البريد الإلكتروني</label>
+                  <div className="relative group">
+                    <Mail className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#D4AF37] transition-colors" size={20} />
+                    <input 
+                      type="email" 
+                      placeholder="name@example.com" 
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="w-full p-4 pr-14 bg-gray-50 rounded-2xl border border-gray-100 outline-none focus:border-[#D4AF37] focus:bg-white transition-all text-right" 
+                    />
+                  </div>
                 </div>
 
-                {/* Password Input */}
-                <div className="relative group">
-                  <Lock className="absolute right-4 top-1/2 -translate-y-1/2 text-[#D4AF37]/60 group-focus-within:text-[#D4AF37] transition-colors" size={20} />
-                  <input 
-                    type="password" 
-                    placeholder="كلمة المرور" 
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="w-full p-4 pr-14 bg-[#0a0a0a]/50 rounded-2xl border border-[#D4AF37]/20 outline-none focus:border-[#D4AF37] focus:ring-2 ring-[#D4AF37]/20 text-[#E0E0E0] text-right transition-all placeholder-gray-600" 
-                  />
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-gray-400 mr-2">كلمة المرور</label>
+                  <div className="relative group">
+                    <Lock className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#D4AF37] transition-colors" size={20} />
+                    <input 
+                      type="password" 
+                      placeholder="••••••••" 
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      className="w-full p-4 pr-14 bg-gray-50 rounded-2xl border border-gray-100 outline-none focus:border-[#D4AF37] focus:bg-white transition-all text-right" 
+                    />
+                  </div>
                 </div>
 
-                {/* Forgot Password Link */}
                 <div className="text-right">
-                  <a href="#" className="text-xs text-[#D4AF37]/60 hover:text-[#D4AF37] transition-colors font-semibold">نسيت كلمة المرور؟</a>
+                  <a href="#" className="text-xs text-[#D4AF37] hover:underline font-bold">نسيت كلمة المرور؟</a>
                 </div>
 
-                {/* Login Button */}
                 <button 
                   type="submit" 
                   disabled={loading}
-                  className="w-full bg-gradient-to-r from-[#D4AF37] to-[#E8C547] text-[#0a0a0a] py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 hover:shadow-2xl hover:shadow-[#D4AF37]/50 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-[#D4AF37] text-white py-5 rounded-2xl font-bold shadow-xl shadow-[#D4AF37]/20 hover:bg-[#B8962E] hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50 mt-6 text-lg flex items-center justify-center gap-2"
                 >
-                  {loading ? (
-                    <>
-                      <span className="animate-spin">⏳</span>
-                      جاري التحقق...
-                    </>
-                  ) : (
-                    <>
-                      دخول الإسطبل الملكي
-                      <ChevronRight size={20} className="rotate-180" />
-                    </>
-                  )}
+                  {loading ? 'جاري التحقق...' : 'دخول الإسطبل الملكي'}
+                  {!loading && <ChevronRight size={20} className="rotate-180" />}
                 </button>
               </form>
 
-              {/* Register Link */}
               <div className="mt-10 text-center">
-                <p className="text-sm text-gray-500">ليس لديك حساب؟ <a href="/register" className="text-[#D4AF37] font-bold hover:underline transition-colors">سجل انضمامك الآن</a></p>
+                <p className="text-sm text-gray-400">ليس لديك حساب؟ <a href="/register" className="text-[#D4AF37] font-bold hover:underline ml-1">سجل انضمامك الآن</a></p>
               </div>
-
-              {/* Secret Hint */}
-              <div className="mt-8 text-center text-[10px] text-gray-700 opacity-50">
-                💎 اكتشف السر... اضغط على الشعار
+            </>
+          ) : (
+            <>
+              <div className="mb-10">
+                <h3 className="text-2xl md:text-3xl font-bold text-[#2C2C2C] mb-2">بوابة المدير</h3>
+                <p className="text-[#D4AF37] font-medium">الوصول إلى لوحة التحكم المطلقة</p>
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* Admin Secret Login Form */}
-        {showAdminSecret && (
-          <div className="bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] rounded-[3rem] shadow-2xl overflow-hidden border-2 border-[#D4AF37] backdrop-blur-sm">
-            
-            {/* Admin Header */}
-            <div className="bg-gradient-to-r from-[#D4AF37]/10 to-[#D4AF37]/5 p-8 border-b border-[#D4AF37]/30">
-              <div className="text-center">
-                <div className="text-4xl mb-2">🛡️👑</div>
-                <h2 className="text-2xl font-bold text-[#D4AF37] tracking-widest">بوابة المدير الأسطوري</h2>
-                <p className="text-[#D4AF37]/70 text-xs mt-2 uppercase tracking-[0.3em]">God Mode Access Only</p>
-              </div>
-            </div>
-
-            {/* Admin Form */}
-            <div className="p-12">
               
               {error && (
-                <div className="mb-8 p-4 bg-red-950/40 border border-red-500/30 rounded-2xl text-red-400 text-sm text-right backdrop-blur-sm">
-                  <span className="font-bold">⚠️ </span>{error}
+                <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm text-right">
+                  {error}
                 </div>
               )}
 
               <form className="space-y-6" onSubmit={handleAdminLogin}>
-                
-                {/* Email Input */}
-                <div className="relative group">
-                  <Mail className="absolute right-4 top-1/2 -translate-y-1/2 text-[#D4AF37]/60 group-focus-within:text-[#D4AF37] transition-colors" size={20} />
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-gray-400 mr-2">بريد المدير</label>
                   <input 
                     type="email" 
-                    placeholder="البريد الإلكتروني للمدير" 
+                    placeholder="admin@rasan.com" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full p-4 pr-14 bg-[#0a0a0a]/50 rounded-2xl border border-[#D4AF37]/40 outline-none focus:border-[#D4AF37] focus:ring-2 ring-[#D4AF37]/30 text-[#E0E0E0] text-right transition-all placeholder-gray-600" 
+                    className="w-full p-4 bg-gray-50 rounded-2xl border border-[#D4AF37]/30 outline-none focus:border-[#D4AF37] focus:bg-white transition-all text-right" 
                   />
                 </div>
 
-                {/* Password Input */}
-                <div className="relative group">
-                  <Lock className="absolute right-4 top-1/2 -translate-y-1/2 text-[#D4AF37]/60 group-focus-within:text-[#D4AF37] transition-colors" size={20} />
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-gray-400 mr-2">كلمة المرور السرية</label>
                   <input 
                     type="password" 
-                    placeholder="كلمة المرور السرية" 
+                    placeholder="••••••••" 
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full p-4 pr-14 bg-[#0a0a0a]/50 rounded-2xl border border-[#D4AF37]/40 outline-none focus:border-[#D4AF37] focus:ring-2 ring-[#D4AF37]/30 text-[#E0E0E0] text-right transition-all placeholder-gray-600" 
+                    className="w-full p-4 bg-gray-50 rounded-2xl border border-[#D4AF37]/30 outline-none focus:border-[#D4AF37] focus:bg-white transition-all text-right" 
                   />
                 </div>
 
-                {/* Admin Login Button */}
                 <button 
                   type="submit" 
                   disabled={loading}
-                  className="w-full bg-gradient-to-r from-[#D4AF37] to-[#E8C547] text-[#0a0a0a] py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 hover:shadow-2xl hover:shadow-[#D4AF37]/50 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-[#2C2C2C] text-[#D4AF37] py-5 rounded-2xl font-bold shadow-xl hover:bg-black hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50 mt-6 text-lg"
                 >
-                  {loading ? (
-                    <>
-                      <span className="animate-spin">⏳</span>
-                      جاري التحقق من الصلاحيات...
-                    </>
-                  ) : (
-                    <>
-                      دخول لوحة التحكم المطلقة
-                      <ChevronRight size={20} className="rotate-180" />
-                    </>
-                  )}
+                  {loading ? 'جاري التحقق من الصلاحيات...' : 'دخول لوحة التحكم'}
                 </button>
+
+                <div className="mt-6 text-center">
+                  <button 
+                    type="button"
+                    onClick={() => setShowAdminSecret(false)}
+                    className="text-sm text-gray-400 hover:text-[#D4AF37] transition-colors"
+                  >
+                    العودة للدخول العادي
+                  </button>
+                </div>
               </form>
-
-              {/* Back Button */}
-              <div className="mt-8 text-center">
-                <button 
-                  onClick={() => {
-                    setShowAdminSecret(false);
-                    setEmail('');
-                    setPassword('');
-                    setError('');
-                  }}
-                  className="text-sm text-[#D4AF37]/60 hover:text-[#D4AF37] transition-colors font-semibold"
-                >
-                  ← العودة إلى الدخول العادي
-                </button>
-              </div>
-
-              {/* Security Warning */}
-              <div className="mt-8 p-4 bg-[#D4AF37]/10 border border-[#D4AF37]/30 rounded-2xl text-[#D4AF37] text-[11px] text-center">
-                🔐 <span className="font-bold">تنبيه أمان:</span> هذه البوابة مخصصة لمديري النظام فقط. أي محاولة دخول غير مصرح بها سيتم تسجيلها.
-              </div>
-            </div>
-          </div>
-        )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
