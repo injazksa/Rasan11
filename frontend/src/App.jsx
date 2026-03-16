@@ -5,6 +5,7 @@ import RegisterPage from './pages/RegisterPage';
 import RaceArena from './pages/RaceArena';
 import Marketplace from './pages/Marketplace';
 import AdminApprovalCenter from './pages/AdminApprovalCenter';
+import HorsePassportPage from './pages/HorsePassportPage'; // Import the new page
 
 // Import Components as Pages
 import GodEyeDashboard from './components/GodEyeDashboard';
@@ -39,6 +40,7 @@ const App = () => {
           {/* Auth Routes - No Navigation */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/passport/:id" element={<HorsePassportPage />} /> {/* New Horse Passport Route */}
           
           {/* Main App Routes - With Navigation */}
           <Route path="/*" element={
