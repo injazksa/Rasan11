@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import RaceArena from './pages/RaceArena';
 import Marketplace from './pages/Marketplace';
 import AdminApprovalCenter from './pages/AdminApprovalCenter';
@@ -60,6 +61,7 @@ const App = () => {
           <Route path="/" element={<LoginPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/passport/:id" element={<HorsePassportPage />} />
           
           {/* Main App Routes */}
