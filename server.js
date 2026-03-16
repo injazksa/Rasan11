@@ -25,9 +25,14 @@ const app = express();
 const httpServer = createServer(app);
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: '*',
-    methods: ['GET', 'POST']
-  }
+    origin: '*', // في الإنتاج يفضل تحديد الدومين الفعلي
+    methods: ['GET', 'POST'],
+    credentials: true
+  },
+  transports: ['websocket', 'polling'], // ضمان عملها على Render
+  allowEIO3: true,
+  pingTimeout: 60000,
+  pingInterval: 25000
 });
 
 const PORT = process.env.PORT || 5000;
@@ -150,14 +155,27 @@ const checkCountryIsolation = (req, res, next) => {
 
 // ============ Email Service ============
 
+// إعدادات SMTP حقيقية (يتم جلبها من متغيرات البيئة لضمان الأمان)
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || 'smtp.ethereal.email',
-  port: process.env.EMAIL_PORT || 587,
-  secure: process.env.EMAIL_SECURE === 'true',
+  host: process.env.EMAIL_HOST,
+  port: parseInt(process.env.EMAIL_PORT || '587'),
+  secure: process.env.EMAIL_SECURE === 'true', // true لـ 465، false لغيرها
   auth: {
-    user: process.env.EMAIL_USER || 'test@ethereal.email',
-    pass: process.env.EMAIL_PASS || 'password',
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
+  pool: true, // استخدام Connection Pool للإيميلات أيضاً
+  maxConnections: 5,
+  maxMessages: 100
+});
+
+// التحقق من صحة إعدادات البريد عند التشغيل
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('⚠️ خطأ في إعدادات البريد الإلكتروني:', error.message);
+  } else {
+    console.log('✅ خادم البريد الإلكتروني جاهز للإرسال');
+  }
 });
 
 const sendRoyalAccreditationEmail = async (userEmail, userName, userRole, country) => {
@@ -183,14 +201,17 @@ const sendRoyalAccreditationEmail = async (userEmail, userName, userRole, countr
   };
 
   try {
-    if (process.env.NODE_ENV === 'production') {
+    // محاولة الإرسال دائماً إذا كانت الإعدادات متوفرة، وإلا استخدام Ethereal للتست
+    if (process.env.EMAIL_USER && process.env.EMAIL_USER !== 'test@ethereal.email') {
       await transporter.sendMail(mailOptions);
+      console.log(`✅ تم إرسال إيميل الاعتماد إلى: ${userEmail}`);
     } else {
+      console.log('ℹ️ لم يتم ضبط SMTP حقيقي، يتم استخدام وضع الاختبار...');
       let info = await transporter.sendMail(mailOptions);
       console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
     }
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('❌ خطأ في إرسال الإيميل:', error.message);
   }
 };
 

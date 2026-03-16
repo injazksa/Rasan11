@@ -62,20 +62,25 @@ const Navigation = () => {
   const menuItems = getMenuItems();
 
   return (
-    <nav className="bg-[#2C2C2C] text-[#D4AF37] p-4 sticky top-0 z-50 shadow-lg border-b border-[#D4AF37]/20 font-serif" dir="rtl">
-      <div className="flex flex-wrap justify-between items-center gap-4">
+    <nav className="bg-gradient-to-b from-[#1A1A1A] to-[#2C2C2C] text-[#D4AF37] px-6 py-4 sticky top-0 z-50 shadow-2xl border-b border-[#D4AF37]/30 font-serif" dir="rtl">
+      <div className="flex flex-wrap justify-between items-center gap-6 max-w-7xl mx-auto">
         
         {/* Logo and Brand */}
-        <div className="flex items-center gap-2 ml-6">
-          <img 
-            src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663030900418/bhxCMGsfVJBQVCWd.png"
-            alt="Rasan" 
-            className="h-8"
-            onError={(e) => {
-              e.target.src = 'https://via.placeholder.com/50x50?text=R';
-            }}
-          />
-          <span className="font-serif font-bold text-lg tracking-widest">رَسَن</span>
+        <div className="flex items-center gap-3 ml-8">
+          <div className="relative">
+            <img 
+              src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663030900418/bhxCMGsfVJBQVCWd.png"
+              alt="Rasan" 
+              className="h-10 drop-shadow-lg"
+              onError={(e) => {
+                e.target.src = 'https://via.placeholder.com/50x50?text=R';
+              }}
+            />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-serif font-bold text-xl tracking-widest text-[#D4AF37]">رَسَن</span>
+            <span className="text-[10px] text-[#D4AF37]/60 tracking-widest">منصة الفرسان الملكية</span>
+          </div>
         </div>
 
         {/* Mobile Menu Button */}
@@ -87,15 +92,15 @@ const Navigation = () => {
         </button>
 
         {/* Desktop Menu - محسّن مع dropdown */}
-        <div className="hidden md:flex items-center gap-1 flex-1 justify-center">
+        <div className="hidden md:flex items-center gap-2 flex-1 justify-center">
           {menuItems.slice(0, 3).map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              className={`px-4 py-2 rounded-lg transition-colors font-bold text-sm ${
+              className={`px-5 py-2.5 rounded-xl transition-all duration-300 font-bold text-sm ${
                 location.pathname === item.path 
-                  ? 'text-white bg-[#D4AF37]/20 border border-[#D4AF37]' 
-                  : 'hover:text-white hover:bg-[#D4AF37]/10'
+                  ? 'text-[#1A1A1A] bg-[#D4AF37] shadow-lg shadow-[#D4AF37]/30' 
+                  : 'text-[#D4AF37] hover:text-white hover:bg-[#D4AF37]/15 hover:shadow-md hover:shadow-[#D4AF37]/20'
               }`}
             >
               {item.label}
@@ -107,23 +112,23 @@ const Navigation = () => {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="px-4 py-2 rounded-lg transition-colors font-bold text-sm flex items-center gap-2 hover:text-white hover:bg-[#D4AF37]/10"
+                className="px-5 py-2.5 rounded-xl transition-all duration-300 font-bold text-sm flex items-center gap-2 text-[#D4AF37] hover:text-white hover:bg-[#D4AF37]/15 hover:shadow-md hover:shadow-[#D4AF37]/20"
               >
                 المزيد
                 <ChevronDown size={16} className={`transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
               </button>
               
               {dropdownOpen && (
-                <div className="absolute top-full right-0 mt-2 w-56 bg-[#1A1A1A] border border-[#D4AF37]/30 rounded-lg shadow-2xl overflow-hidden">
+                <div className="absolute top-full right-0 mt-3 w-56 bg-gradient-to-b from-[#1A1A1A] to-[#2C2C2C] border border-[#D4AF37]/40 rounded-xl shadow-2xl shadow-[#D4AF37]/20 overflow-hidden backdrop-blur-sm">
                   {menuItems.slice(3).map((item) => (
                     <Link
                       key={item.path}
                       to={item.path}
                       onClick={() => setDropdownOpen(false)}
-                      className={`block px-4 py-3 transition-colors font-bold text-sm border-b border-[#333] last:border-b-0 ${
+                      className={`block px-5 py-3 transition-all duration-300 font-bold text-sm border-b border-[#D4AF37]/10 last:border-b-0 ${
                         location.pathname === item.path 
-                          ? 'text-white bg-[#D4AF37]/20' 
-                          : 'text-[#D4AF37] hover:text-white hover:bg-[#D4AF37]/10'
+                          ? 'text-[#1A1A1A] bg-[#D4AF37] shadow-lg shadow-[#D4AF37]/30' 
+                          : 'text-[#D4AF37] hover:text-white hover:bg-[#D4AF37]/15 hover:shadow-md hover:shadow-[#D4AF37]/20'
                       }`}
                     >
                       {item.label}
@@ -136,16 +141,16 @@ const Navigation = () => {
         </div>
 
         {/* User Info and Logout - Desktop */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-5 ml-8">
           {user && (
-            <div className="text-xs text-gray-300 text-right">
-              <div className="font-bold">{user.full_name || user.username}</div>
-              <div className="text-[#D4AF37]">{user.role === 'admin' ? 'مدير النظام' : user.role}</div>
+            <div className="text-xs text-right px-4 py-2 rounded-lg bg-[#D4AF37]/10 border border-[#D4AF37]/20">
+              <div className="font-bold text-[#D4AF37]">{user.full_name || user.username}</div>
+              <div className="text-[#D4AF37]/70 text-[10px] mt-1">{user.role === 'admin' ? '🛡️ مدير النظام' : user.role}</div>
             </div>
           )}
           <button
             onClick={handleLogout}
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors"
+            className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all duration-300 shadow-lg shadow-red-600/30 hover:shadow-red-600/50"
             title="تسجيل الخروج"
           >
             <LogOut size={18} />
@@ -161,21 +166,21 @@ const Navigation = () => {
             <Link
               key={item.path}
               to={item.path}
-              className={`block py-3 px-4 rounded-lg transition-colors font-bold text-sm ${
+              className={`block py-3 px-4 rounded-xl transition-all duration-300 font-bold text-sm ${
                 location.pathname === item.path 
-                  ? 'bg-[#D4AF37]/20 text-white border border-[#D4AF37]' 
-                  : 'text-[#D4AF37] hover:text-white hover:bg-[#D4AF37]/10'
+                  ? 'bg-[#D4AF37] text-[#1A1A1A] shadow-lg shadow-[#D4AF37]/30' 
+                  : 'text-[#D4AF37] hover:text-white hover:bg-[#D4AF37]/15'
               }`}
               onClick={() => setMobileMenuOpen(false)}
             >
               {item.label}
             </Link>
           ))}
-          <hr className="border-[#D4AF37]/20 my-2" />
+          <hr className="border-[#D4AF37]/20 my-3" />
           {user && (
-            <div className="py-3 px-4 text-xs text-right">
-              <div className="font-bold text-white">{user.full_name || user.username}</div>
-              <div className="text-[#D4AF37]">{user.role === 'admin' ? 'مدير النظام' : user.role}</div>
+            <div className="py-3 px-4 text-xs text-right bg-[#D4AF37]/10 rounded-lg border border-[#D4AF37]/20">
+              <div className="font-bold text-[#D4AF37]">{user.full_name || user.username}</div>
+              <div className="text-[#D4AF37]/70 text-[10px] mt-1">{user.role === 'admin' ? '🛡️ مدير النظام' : user.role}</div>
             </div>
           )}
           <button
@@ -183,7 +188,7 @@ const Navigation = () => {
               handleLogout();
               setMobileMenuOpen(false);
             }}
-            className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors"
+            className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-4 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-red-600/30"
           >
             <LogOut size={18} />
             خروج

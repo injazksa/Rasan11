@@ -397,3 +397,10 @@ CREATE TRIGGER update_marketplace_items_updated_at BEFORE UPDATE ON marketplace_
 CREATE TRIGGER update_auctions_updated_at BEFORE UPDATE ON auctions FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_transactions_updated_at BEFORE UPDATE ON transactions FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_marketplace_orders_updated_at BEFORE UPDATE ON marketplace_orders FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ============ Performance Optimization Indexes ============
+CREATE INDEX IF NOT EXISTS idx_notifications_user_id_read ON notifications (user_id, is_read);
+CREATE INDEX IF NOT EXISTS idx_horses_federation_approved ON horses (federation_id, is_approved_by_federation);
+CREATE INDEX IF NOT EXISTS idx_auctions_horse_status ON auctions (horse_id, status);
+CREATE INDEX IF NOT EXISTS idx_bids_auction_amount ON bids (auction_id, bid_amount DESC);
+CREATE INDEX IF NOT EXISTS idx_users_country_role ON users (country, role);

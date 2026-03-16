@@ -15,7 +15,10 @@ const pool = new Pool({
   connectionString: connectionString,
   ssl: {
     rejectUnauthorized: false // مطلوب للاتصال بقواعد بيانات Render
-  }
+  },
+  max: 20, // أقصى عدد للاتصالات في الـ pool
+  idleTimeoutMillis: 30000, // إغلاق الاتصالات الخاملة بعد 30 ثانية
+  connectionTimeoutMillis: 2000, // مهلة الاتصال 2 ثانية
 });
 
 pool.on('error', (err) => {
