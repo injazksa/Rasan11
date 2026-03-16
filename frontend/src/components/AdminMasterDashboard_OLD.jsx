@@ -3,7 +3,7 @@ import {
   ShieldAlert, Key, Eye, UserX, UserCheck, Search, Database, Fingerprint, Loader2,
   Plus, Edit, Trash2, Mail, Lock, Ban, CheckCircle, AlertCircle, TrendingUp,
   BarChart3, Users, DollarSign, Package, Gavel, MapPin, Settings, Download,
-  Filter, ChevronDown, X, Send, FileText, Clock, Bell, ChevronRight
+  Filter, ChevronDown, X, Send, FileText, Clock
 } from 'lucide-react';
 import axios from 'axios';
 import AdminAuctionsManagement from './AdminAuctionsManagement';
@@ -29,9 +29,6 @@ const AdminMasterDashboard = () => {
   const [auctions, setAuctions] = useState([]);
   const [orders, setOrders] = useState([]);
   const [permissions, setPermissions] = useState({});
-  const [notifications, setNotifications] = useState([]);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [navDropdownOpen, setNavDropdownOpen] = useState(false);
 
   // نظام الصلاحيات - مرتب من الأقوى للأضعف
   const permissionsHierarchy = {
@@ -46,10 +43,6 @@ const AdminMasterDashboard = () => {
 
   useEffect(() => {
     fetchDashboardData();
-    fetchNotifications();
-    // تحديث الإشعارات كل 30 ثانية
-    const notificationInterval = setInterval(fetchNotifications, 30000);
-    return () => clearInterval(notificationInterval);
   }, [filterRole, filterStatus, filterCountry]);
 
   const fetchDashboardData = async () => {
@@ -76,18 +69,6 @@ const AdminMasterDashboard = () => {
     }
   };
 
-  const fetchNotifications = async () => {
-    try {
-      const token = localStorage.getItem('rasan_token');
-      const response = await axios.get('/api/notifications', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setNotifications(response.data);
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
-    }
-  };
-
   const handleOpenModal = (type, user = null) => {
     setModalType(type);
     setSelectedUser(user);
@@ -100,94 +81,6 @@ const AdminMasterDashboard = () => {
     setModalType('');
     setSelectedUser(null);
     setFormData({});
-  };
-
-  // تحديث ملف المستخدم
-  const handleUpdateUser = async () => {
-    if (!selectedUser?.id) {
-      alert('خطأ: لم يتم تحديد المستخدم');
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem('rasan_token');
-      await axios.put(
-        `/api/admin/user/${selectedUser.id}`,
-        formData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      alert('تم تحديث بيانات المستخدم بنجاح');
-      handleCloseModal();
-      fetchDashboardData();
-    } catch (error) {
-      alert('فشل في تحديث بيانات المستخدم');
-      console.error(error);
-    }
-  };
-
-  // إرسال إشعار بريدي للمستخدم
-  const handleSendEmail = async (userId, emailType = 'notification') => {
-    try {
-      const token = localStorage.getItem('rasan_token');
-      const user = users.find(u => u.id === userId);
-      
-      await axios.post(
-        `/api/admin/user/${userId}/send-email`,
-        {
-          email: user.email,
-          type: emailType,
-          subject: 'إشعار من منظومة رَسَن',
-          message: formData.message || 'رسالة من مدير النظام'
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      alert('تم إرسال الإيميل بنجاح');
-      handleCloseModal();
-    } catch (error) {
-      alert('فشل في إرسال الإيميل');
-      console.error(error);
-    }
-  };
-
-  // إرسال طلب تحديث مستند
-  const handleSendDocumentRequest = async (userId) => {
-    try {
-      const token = localStorage.getItem('rasan_token');
-      const user = users.find(u => u.id === userId);
-      
-      await axios.post(
-        `/api/admin/user/${userId}/request-document`,
-        {
-          email: user.email,
-          documentType: formData.documentType,
-          notes: formData.notes
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      alert('تم إرسال طلب المستند بنجاح');
-      handleCloseModal();
-    } catch (error) {
-      alert('فشل في إرسال طلب المستند');
-      console.error(error);
-    }
-  };
-
-  // إرسال رابط إعادة تعيين كلمة المرور
-  const handleSendPasswordResetLink = async (userId) => {
-    try {
-      const token = localStorage.getItem('rasan_token');
-      const user = users.find(u => u.id === userId);
-      
-      await axios.post(
-        `/api/admin/user/${userId}/send-password-reset`,
-        { email: user.email },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      alert('تم إرسال رابط إعادة تعيين كلمة المرور بنجاح');
-    } catch (error) {
-      alert('فشل في إرسال رابط إعادة التعيين');
-      console.error(error);
-    }
   };
 
   const handlePasswordReset = async () => {
@@ -330,30 +223,11 @@ const AdminMasterDashboard = () => {
     }
   };
 
-  // تحديث حالة الإشعار كمقروء
-  const handleMarkNotificationAsRead = async (notificationId) => {
-    try {
-      const token = localStorage.getItem('rasan_token');
-      await axios.post(
-        `/api/notifications/${notificationId}/read`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setNotifications(prev => 
-        prev.map(n => n.id === notificationId ? { ...n, is_read: true } : n)
-      );
-    } catch (error) {
-      console.error('Error marking notification as read:', error);
-    }
-  };
-
   const filteredUsers = users.filter(user =>
     user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.id?.toString().includes(searchTerm)
   );
-
-  const unreadNotifications = notifications.filter(n => !n.is_read);
 
   if (loading) {
     return (
@@ -366,7 +240,7 @@ const AdminMasterDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0F0F0F] to-[#1A1A1A] text-[#E0E0E0] p-4 md:p-8 font-serif" dir="rtl">
       
-      {/* Header with Notifications */}
+      {/* Header */}
       <div className="mb-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 border-b border-[#D4AF37]/30 pb-8">
           <div>
@@ -375,111 +249,53 @@ const AdminMasterDashboard = () => {
             </h1>
             <p className="text-gray-400 text-xs mt-2 uppercase tracking-[0.4em]">نظام إدارة منظومة رَسَن الكاملة</p>
           </div>
-          <div className="flex items-center gap-4">
-            {/* Notifications Bell */}
-            <div className="relative">
-              <button
-                onClick={() => setShowNotifications(!showNotifications)}
-                className="relative p-3 bg-[#1A1A1A] border border-[#D4AF37]/20 rounded-full hover:border-[#D4AF37]/50 transition"
-              >
-                <Bell size={20} className="text-[#D4AF37]" />
-                {unreadNotifications.length > 0 && (
-                  <span className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {unreadNotifications.length}
-                  </span>
-                )}
-              </button>
-
-              {/* Notifications Dropdown */}
-              {showNotifications && (
-                <div className="absolute top-full right-0 mt-2 w-80 bg-[#1A1A1A] border border-[#D4AF37]/30 rounded-2xl shadow-2xl z-50 max-h-96 overflow-y-auto">
-                  <div className="p-4 border-b border-[#333] bg-black/20">
-                    <h3 className="font-bold text-[#D4AF37]">الإشعارات ({unreadNotifications.length} جديدة)</h3>
-                  </div>
-                  {notifications.length === 0 ? (
-                    <div className="p-8 text-center text-gray-500">لا توجد إشعارات</div>
-                  ) : (
-                    notifications.map(notif => (
-                      <div
-                        key={notif.id}
-                        onClick={() => handleMarkNotificationAsRead(notif.id)}
-                        className={`p-4 border-b border-[#333] cursor-pointer transition ${
-                          notif.is_read ? 'bg-black/20' : 'bg-[#D4AF37]/10'
-                        }`}
-                      >
-                        <div className="flex justify-between items-start gap-2">
-                          <div className="flex-1">
-                            <h4 className="font-bold text-sm text-white">{notif.title}</h4>
-                            <p className="text-xs text-gray-400 mt-1">{notif.message}</p>
-                            <p className="text-[10px] text-gray-500 mt-2">
-                              {new Date(notif.created_at).toLocaleDateString('ar-EG')}
-                            </p>
-                          </div>
-                          {!notif.is_read && (
-                            <div className="w-2 h-2 bg-[#D4AF37] rounded-full mt-1"></div>
-                          )}
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              )}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full md:w-auto">
+            <div className="bg-[#1A1A1A] border border-[#D4AF37]/20 p-4 rounded-2xl">
+              <div className="text-[10px] text-gray-400">إجمالي المستخدمين</div>
+              <div className="text-xl font-bold text-[#D4AF37]">{stats.total_users || 0}</div>
             </div>
-
-            {/* Stats Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-[#1A1A1A] border border-[#D4AF37]/20 p-4 rounded-2xl">
-                <div className="text-[10px] text-gray-400">إجمالي المستخدمين</div>
-                <div className="text-xl font-bold text-[#D4AF37]">{stats.total_users || 0}</div>
-              </div>
-              <div className="bg-[#1A1A1A] border border-[#D4AF37]/20 p-4 rounded-2xl">
-                <div className="text-[10px] text-gray-400">الإيرادات</div>
-                <div className="text-xl font-bold text-green-400">${stats.total_revenue?.toLocaleString() || '0'}</div>
-              </div>
-              <div className="bg-[#1A1A1A] border border-[#D4AF37]/20 p-4 rounded-2xl">
-                <div className="text-[10px] text-gray-400">المزادات النشطة</div>
-                <div className="text-xl font-bold text-blue-400">{stats.active_auctions || 0}</div>
-              </div>
-              <div className="bg-[#1A1A1A] border border-[#D4AF37]/20 p-4 rounded-2xl">
-                <div className="text-[10px] text-gray-400">الطلبات المعلقة</div>
-                <div className="text-xl font-bold text-yellow-400">{stats.pending_orders || 0}</div>
-              </div>
+            <div className="bg-[#1A1A1A] border border-[#D4AF37]/20 p-4 rounded-2xl">
+              <div className="text-[10px] text-gray-400">الإيرادات</div>
+              <div className="text-xl font-bold text-green-400">${stats.total_revenue?.toLocaleString() || '0'}</div>
+            </div>
+            <div className="bg-[#1A1A1A] border border-[#D4AF37]/20 p-4 rounded-2xl">
+              <div className="text-[10px] text-gray-400">المزادات النشطة</div>
+              <div className="text-xl font-bold text-blue-400">{stats.active_auctions || 0}</div>
+            </div>
+            <div className="bg-[#1A1A1A] border border-[#D4AF37]/20 p-4 rounded-2xl">
+              <div className="text-[10px] text-gray-400">الطلبات المعلقة</div>
+              <div className="text-xl font-bold text-yellow-400">{stats.pending_orders || 0}</div>
             </div>
           </div>
         </div>
 
-        {/* Tabs Navigation - محسّن مع dropdown */}
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 border-b border-[#333]">
-          <div className="flex flex-wrap gap-2 flex-1">
-            {[
-              { id: 'users', label: 'إدارة المستخدمين', icon: Users },
-              { id: 'approvals', label: 'طلبات الموافقة', icon: CheckCircle },
-              { id: 'auctions', label: 'إدارة المزادات', icon: Gavel },
-              { id: 'products', label: 'إدارة المتجر', icon: Package },
-              { id: 'orders', label: 'الطلبات والتوصيل', icon: TrendingUp },
-              { id: 'reports', label: 'التقارير', icon: BarChart3 },
-              { id: 'permissions', label: 'الصلاحيات', icon: Lock }
-            ].map(tab => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    setActiveTab(tab.id);
-                    setNavDropdownOpen(false);
-                  }}
-                  className={`flex items-center gap-2 px-4 py-3 font-bold text-sm transition-all whitespace-nowrap ${
-                    activeTab === tab.id
-                      ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
-                      : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  <Icon size={16} />
-                  {tab.label}
-                </button>
-              );
-            })}
-          </div>
+        {/* Tabs Navigation */}
+        <div className="flex flex-wrap gap-2 border-b border-[#333]">
+          {[
+            { id: 'users', label: 'إدارة المستخدمين', icon: Users },
+            { id: 'approvals', label: 'طلبات الموافقة', icon: CheckCircle },
+            { id: 'auctions', label: 'إدارة المزادات', icon: Gavel },
+            { id: 'products', label: 'إدارة المتجر', icon: Package },
+            { id: 'orders', label: 'الطلبات والتوصيل', icon: TrendingUp },
+            { id: 'reports', label: 'التقارير المالية', icon: BarChart3 },
+            { id: 'permissions', label: 'الصلاحيات', icon: Lock }
+          ].map(tab => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-4 py-3 font-bold text-sm transition-all ${
+                  activeTab === tab.id
+                    ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                <Icon size={16} />
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -645,13 +461,7 @@ const AdminMasterDashboard = () => {
                         {user.last_login ? new Date(user.last_login).toLocaleDateString('ar-EG') : 'لم يسجل دخول'}
                       </td>
                       <td className="p-4">
-                        <div className="flex gap-2 flex-wrap">
-                          <button
-                            onClick={() => handleOpenModal('edit', user)}
-                            className="p-2 hover:text-yellow-400 transition" title="تعديل البيانات"
-                          >
-                            <Edit size={16} />
-                          </button>
+                        <div className="flex gap-2">
                           <button
                             onClick={() => handleOpenModal('password', user)}
                             className="p-2 hover:text-blue-400 transition" title="تغيير كلمة المرور"
@@ -659,10 +469,10 @@ const AdminMasterDashboard = () => {
                             <Key size={16} />
                           </button>
                           <button
-                            onClick={() => handleSendPasswordResetLink(user.id)}
-                            className="p-2 hover:text-cyan-400 transition" title="إرسال رابط إعادة التعيين"
+                            onClick={() => handleOpenModal('edit', user)}
+                            className="p-2 hover:text-yellow-400 transition" title="تعديل"
                           >
-                            <Mail size={16} />
+                            <Edit size={16} />
                           </button>
                           {user.status === 'active' ? (
                             <button
@@ -680,15 +490,15 @@ const AdminMasterDashboard = () => {
                             </button>
                           )}
                           <button
-                            onClick={() => handleOpenModal('send_email', user)}
-                            className="p-2 hover:text-purple-400 transition" title="إرسال رسالة"
+                            className="p-2 hover:text-purple-400 transition" title="إرسال بريد"
                           >
-                            <Send size={16} />
+                            <Mail size={16} />
                           </button>
                         </div>
                       </td>
                     </tr>
-                  ))}</tbody>
+                  ))}
+                </tbody>
               </table>
             </div>
           </div>
@@ -738,7 +548,6 @@ const AdminMasterDashboard = () => {
                       <FileText size={20} />
                     </button>
                     <button
-                      onClick={() => handleOpenModal('send_email', req)}
                       className="bg-purple-600 text-white p-3 rounded-full hover:scale-110 transition shadow-lg font-bold"
                       title="إرسال رسالة"
                     >
@@ -811,13 +620,12 @@ const AdminMasterDashboard = () => {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-[#1A1A1A] border border-[#D4AF37]/30 rounded-3xl p-8 max-w-md w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-[#1A1A1A] border border-[#D4AF37]/30 rounded-3xl p-8 max-w-md w-full">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-[#D4AF37]">
                 {modalType === 'password' && 'تغيير كلمة المرور'}
-                {modalType === 'edit' && 'تعديل بيانات المستخدم'}
+                {modalType === 'edit' && 'تعديل المستخدم'}
                 {modalType === 'request_docs' && 'طلب مستندات'}
-                {modalType === 'send_email' && 'إرسال رسالة'}
               </h2>
               <button onClick={handleCloseModal} className="text-gray-400 hover:text-white">
                 <X size={24} />
@@ -845,132 +653,27 @@ const AdminMasterDashboard = () => {
               </div>
             )}
 
-            {modalType === 'edit' && selectedUser && (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-bold text-[#D4AF37] mb-2">الاسم الكامل</label>
-                  <input
-                    type="text"
-                    value={formData.full_name || ''}
-                    onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                    className="w-full bg-black/50 border border-gray-800 p-3 rounded-2xl text-white focus:border-[#D4AF37] outline-none"
-                    placeholder="أدخل الاسم الكامل"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-[#D4AF37] mb-2">البريد الإلكتروني</label>
-                  <input
-                    type="email"
-                    value={formData.email || ''}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full bg-black/50 border border-gray-800 p-3 rounded-2xl text-white focus:border-[#D4AF37] outline-none"
-                    placeholder="أدخل البريد الإلكتروني"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-[#D4AF37] mb-2">رقم الهاتف</label>
-                  <input
-                    type="tel"
-                    value={formData.phone || ''}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full bg-black/50 border border-gray-800 p-3 rounded-2xl text-white focus:border-[#D4AF37] outline-none"
-                    placeholder="أدخل رقم الهاتف"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-[#D4AF37] mb-2">الدولة</label>
-                  <input
-                    type="text"
-                    value={formData.country || ''}
-                    onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                    className="w-full bg-black/50 border border-gray-800 p-3 rounded-2xl text-white focus:border-[#D4AF37] outline-none"
-                    placeholder="أدخل الدولة"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-[#D4AF37] mb-2">المدينة</label>
-                  <input
-                    type="text"
-                    value={formData.city || ''}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="w-full bg-black/50 border border-gray-800 p-3 rounded-2xl text-white focus:border-[#D4AF37] outline-none"
-                    placeholder="أدخل المدينة"
-                  />
-                </div>
-                <button
-                  onClick={handleUpdateUser}
-                  className="w-full bg-[#D4AF37] text-black py-3 rounded-2xl font-bold hover:bg-[#B8962E] transition"
-                >
-                  حفظ التغييرات
-                </button>
-              </div>
-            )}
-
             {modalType === 'request_docs' && (
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-bold text-[#D4AF37] mb-2">نوع المستند المطلوب</label>
-                  <select 
-                    value={formData.documentType || ''}
-                    onChange={(e) => setFormData({ ...formData, documentType: e.target.value })}
-                    className="w-full bg-black/50 border border-gray-800 p-3 rounded-2xl text-white focus:border-[#D4AF37] outline-none"
-                  >
-                    <option value="">اختر نوع المستند</option>
-                    <option value="registration">شهادة تسجيل</option>
-                    <option value="identity">وثيقة هوية</option>
-                    <option value="ownership">شهادة ملكية</option>
-                    <option value="other">وثيقة أخرى</option>
+                  <select className="w-full bg-black/50 border border-gray-800 p-3 rounded-2xl text-white focus:border-[#D4AF37] outline-none">
+                    <option>شهادة تسجيل</option>
+                    <option>وثيقة هوية</option>
+                    <option>شهادة ملكية</option>
+                    <option>وثيقة أخرى</option>
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-[#D4AF37] mb-2">ملاحظات</label>
                   <textarea
-                    value={formData.notes || ''}
-                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                     className="w-full bg-black/50 border border-gray-800 p-3 rounded-2xl text-white focus:border-[#D4AF37] outline-none"
                     placeholder="أدخل الملاحظات..."
                     rows="3"
                   />
                 </div>
-                <button 
-                  onClick={() => handleSendDocumentRequest(selectedUser?.id)}
-                  className="w-full bg-[#D4AF37] text-black py-3 rounded-2xl font-bold hover:bg-[#B8962E] transition flex items-center justify-center gap-2"
-                >
+                <button className="w-full bg-[#D4AF37] text-black py-3 rounded-2xl font-bold hover:bg-[#B8962E] transition flex items-center justify-center gap-2">
                   <Send size={18} /> إرسال الطلب
-                </button>
-              </div>
-            )}
-
-            {modalType === 'send_email' && (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-bold text-[#D4AF37] mb-2">نوع الرسالة</label>
-                  <select 
-                    value={formData.emailType || 'notification'}
-                    onChange={(e) => setFormData({ ...formData, emailType: e.target.value })}
-                    className="w-full bg-black/50 border border-gray-800 p-3 rounded-2xl text-white focus:border-[#D4AF37] outline-none"
-                  >
-                    <option value="notification">إشعار عام</option>
-                    <option value="warning">تحذير</option>
-                    <option value="update">تحديث مهم</option>
-                    <option value="custom">رسالة مخصصة</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-[#D4AF37] mb-2">محتوى الرسالة</label>
-                  <textarea
-                    value={formData.message || ''}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full bg-black/50 border border-gray-800 p-3 rounded-2xl text-white focus:border-[#D4AF37] outline-none"
-                    placeholder="أدخل محتوى الرسالة..."
-                    rows="4"
-                  />
-                </div>
-                <button 
-                  onClick={() => handleSendEmail(selectedUser?.id, formData.emailType)}
-                  className="w-full bg-[#D4AF37] text-black py-3 rounded-2xl font-bold hover:bg-[#B8962E] transition flex items-center justify-center gap-2"
-                >
-                  <Send size={18} /> إرسال الرسالة
                 </button>
               </div>
             )}
