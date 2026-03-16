@@ -55,7 +55,7 @@ const LoginPage = () => {
       <div className="max-w-md w-full bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-[#D4AF37]/10">
         <div className="p-10">
           <div className="text-center mb-10">
-            <img src="/logo_clean.png" alt="Rasan Logo" className="w-32 mx-auto mb-4 drop-shadow-md" />
+            <img src="/logo_transparent.png" alt="Rasan Logo" className="w-32 mx-auto mb-4 drop-shadow-md" />
             <h1 className="text-3xl font-serif font-bold text-[#2C2C2C] tracking-widest">رَسَن</h1>
             <p className="text-[#D4AF37] text-[10px] mt-1 uppercase tracking-[0.3em] font-bold">السيادة الرقمية للفروسية</p>
           </div>
