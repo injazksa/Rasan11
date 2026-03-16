@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, BellRing, CheckCircle, AlertTriangle, CreditCard, Syringe, Info, Trash2 } from 'lucide-react';
-import { notificationsAPI, getCurrentUser } from '../services/api';
-import { connectSocket, onNotification, offNotification } from '../services/socket';
+import { notificationsAPI, getCurrentUser } from '../services/api.js';
+import { connectSocket, onNotification, offNotification } from '../services/socket.js';
 
 const RasanNotifications = () => {
   const [notifications, setNotifications] = useState([]);
