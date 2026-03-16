@@ -135,17 +135,21 @@ app.get('/health', (req, res) => {
 // Auth Routes
 app.post('/api/auth/register', async (req, res) => {
   const { username, email, password, role, full_name, phone, country, city } = req.body;
+  
+  console.log('DEBUG: Received registration request:', { username, email, role, full_name, phone, country, city });
 
-  if (!username || !email || !password || !full_name) {
-    return res.status(400).json({ message: 'جميع الحقول الأساسية مطلوبة' });
+  if (!email || !password || !full_name) {
+    return res.status(400).json({ message: 'يرجى تعبئة جميع الحقول: الاسم، البريد، وكلمة المرور' });
   }
+  
+  const finalUsername = username || email.split('@')[0] + Math.floor(Math.random() * 1000);
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     console.log('Attempting to insert user with data:', { username, email, role, full_name, phone, country, city });
     const result = await db.query(
       'INSERT INTO users (username, email, password_hash, role, full_name, phone, country, city, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id, username, email, role, full_name, country, status',
-      [username, email, hashedPassword, role || 'owner', full_name, phone, country, city, 'inactive']
+      [finalUsername, email, hashedPassword, role || 'owner', full_name, phone, country, city || 'N/A', 'inactive']
     );
     console.log('Insert successful:', result.rows[0]);
     const newUser = result.rows[0];
