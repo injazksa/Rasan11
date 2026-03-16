@@ -15,7 +15,7 @@ const GodEyeDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('rasan_token');
       const [usersResponse, statsResponse] = await Promise.all([
         axios.get('/api/admin/godeye/users', { headers: { Authorization: `Bearer ${token}` } }),
         axios.get('/api/admin/godeye/stats', { headers: { Authorization: `Bearer ${token}` } })
@@ -30,11 +30,26 @@ const GodEyeDashboard = () => {
     }
   };
 
+  const handlePasswordReset = async (userId) => {
+    const newPassword = prompt('أدخل كلمة المرور الجديدة:');
+    if (!newPassword) return;
+    
+    try {
+      const token = localStorage.getItem('rasan_token');
+      await axios.post(`/api/admin/godeye/user/${userId}/password`, { password: newPassword }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('تم تغيير كلمة المرور بنجاح.');
+    } catch (error) {
+      alert('فشل في تغيير كلمة المرور.');
+    }
+  };
+
   const handleUserStatusChange = async (userId, currentStatus) => {
     setProcessingUserId(userId);
     const newStatus = currentStatus === 'active' ? 'blocked' : 'active';
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('rasan_token');
       await axios.post(`/api/admin/godeye/user/${userId}/status`, { status: newStatus }, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -115,6 +130,7 @@ const GodEyeDashboard = () => {
           <thead>
             <tr className="text-gray-500 border-b border-[#333]">
               <th className="p-6">المستخدم (ID)</th>
+              <th className="p-6">الدولة / الاتحاد</th>
               <th className="p-6">نوع الحساب</th>
               <th className="p-6">بيانات التواصل</th>
               <th className="p-6">الحالة</th>
@@ -127,6 +143,10 @@ const GodEyeDashboard = () => {
                 <td className="p-6">
                   <div className="font-bold text-white">{user.full_name || user.username}</div>
                   <div className="text-[10px] text-[#D4AF37] font-mono">{user.id}</div>
+                </td>
+                <td className="p-6">
+                  <div className="text-white font-bold">{user.country || 'N/A'}</div>
+                  <div className="text-[10px] text-gray-500">{user.federation || 'بدون اتحاد'}</div>
                 </td>
                 <td className="p-6">
                   <span className="bg-gray-800 px-3 py-1 rounded-lg text-[10px] uppercase">{user.role}</span>
@@ -143,7 +163,13 @@ const GodEyeDashboard = () => {
                 <td className="p-6">
                   <div className="flex gap-3">
                     <button className="p-2 hover:text-[#D4AF37] transition" title="مشاهدة كـ مستخدم"><Eye size={16}/></button>
-                    <button className="p-2 hover:text-blue-400 transition" title="تغيير كلمة المرور"><Key size={16}/></button>
+                    <button 
+                      onClick={() => handlePasswordReset(user.id)}
+                      className="p-2 hover:text-blue-400 transition" 
+                      title="تغيير كلمة المرور"
+                    >
+                      <Key size={16}/>
+                    </button>
                     <button 
                       onClick={() => handleUserStatusChange(user.id, user.status)}
                       disabled={processingUserId === user.id}

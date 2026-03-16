@@ -24,18 +24,24 @@ const RegisterPage = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const countries = [
+    const countries = [
     { name: 'السعودية', federation: 'الاتحاد السعودي للفروسية' },
     { name: 'الأردن', federation: 'اتحاد الفروسية الملكي الأردني' },
     { name: 'قطر', federation: 'الاتحاد القطري للفروسية' },
     { name: 'البحرين', federation: 'الاتحاد الملكي البحريني للفروسية' },
     { name: 'الإمارات', federation: 'اتحاد الإمارات للفروسية والسباق' },
     { name: 'الكويت', federation: 'الاتحاد الكويتي للفروسية' },
+    { name: 'عمان', federation: 'الاتحاد العماني للفروسية' },
     { name: 'مصر', federation: 'الاتحاد المصري للفروسية' },
-    { name: 'تركيا', federation: 'الاتحاد التركي للفروسية' },
+    { name: 'المغرب', federation: 'الجامعة الملكية المغربية للفروسية' },
+    { name: 'تونس', federation: 'الجامعة التونسية للفروسية' },
+    { name: 'الجزائر', federation: 'الاتحاد الجزائري للفروسية' },
     { name: 'ليبيا', federation: 'الاتحاد الليبي للفروسية' },
     { name: 'سوريا', federation: 'الاتحاد العربي السوري للفروسية' },
-    { name: 'لبنان', federation: 'الاتحاد اللبناني للفروسية' }
+    { name: 'لبنان', federation: 'الاتحاد اللبناني للفروسية' },
+    { name: 'العراق', federation: 'الاتحاد العراقي للفروسية' },
+    { name: 'فلسطين', federation: 'الاتحاد الفلسطيني للفروسية' },
+    { name: 'تركيا', federation: 'الاتحاد التركي للفروسية' }
   ];
 
   const roles = [
@@ -72,10 +78,15 @@ const RegisterPage = () => {
         : '/api/auth/register';
 
       // Ensure username is set (using email prefix if empty)
-      const payload = {
-        ...formData,
-        username: formData.username || formData.email.split('@')[0],
-        city: 'N/A' // Default city as it's required by backend but not in form
+            const payload = {
+        full_name: formData.full_name,
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone,
+        country: formData.country,
+        role: formData.role,
+        username: formData.email.split('@')[0] + Math.floor(Math.random() * 1000),
+        city: 'N/A' // Default city to satisfy backend requirement
       };
 
       console.log('Sending Payload:', payload);
@@ -112,7 +123,7 @@ const RegisterPage = () => {
         
         {/* Left Side - Branding */}
         <div className="md:w-1/3 bg-[#2C2C2C] p-8 md:p-12 text-[#D4AF37] flex flex-col items-center justify-center text-center border-b-8 md:border-b-0 md:border-l-8 border-[#D4AF37]">
-          <img src="/logo_transparent.png" alt="Rasan Logo" className="w-32 md:w-48 mb-6 drop-shadow-lg" />
+          <img src="/rasan_logo.png" alt="Rasan Logo" className="w-48 md:w-64 mb-6 drop-shadow-2xl" />
           <h2 className="text-2xl md:text-3xl font-serif mb-4">منظومة رَسَن</h2>
           <p className="text-xs leading-relaxed opacity-70 uppercase tracking-widest">السيادة الرقمية لعالم الفروسية</p>
         </div>
@@ -121,7 +132,7 @@ const RegisterPage = () => {
         <div className="md:w-2/3 p-8 md:p-12">
           <div className="flex justify-between items-center mb-8">
             <h3 className="text-xl md:text-2xl font-bold text-[#2C2C2C]">إنشاء حساب ملكي</h3>
-            <img src="/logo_transparent.png" alt="Rasan" className="h-8 md:hidden" />
+            <img src="/rasan_logo.png" alt="Rasan" className="h-12 md:hidden" />
           </div>
           
           {error && (

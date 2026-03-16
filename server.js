@@ -246,8 +246,34 @@ app.get('/api/admin/godeye/stats', checkCountryIsolation, async (req, res) => {
 app.get('/api/admin/godeye/users', checkCountryIsolation, async (req, res) => {
   if (req.user.role !== 'admin') return res.status(403).json({ message: "Access Denied" });
   try {
+    const federationMap = {
+      'السعودية': 'الاتحاد السعودي للفروسية',
+      'الأردن': 'اتحاد الفروسية الملكي الأردني',
+      'قطر': 'الاتحاد القطري للفروسية',
+      'البحرين': 'الاتحاد الملكي البحريني للفروسية',
+      'الإمارات': 'اتحاد الإمارات للفروسية والسباق',
+      'الكويت': 'الاتحاد الكويتي للفروسية',
+      'عمان': 'الاتحاد العماني للفروسية',
+      'مصر': 'الاتحاد المصري للفروسية',
+      'المغرب': 'الجامعة الملكية المغربية للفروسية',
+      'تونس': 'الجامعة التونسية للفروسية',
+      'الجزائر': 'الاتحاد الجزائري للفروسية',
+      'ليبيا': 'الاتحاد الليبي للفروسية',
+      'سوريا': 'الاتحاد العربي السوري للفروسية',
+      'لبنان': 'الاتحاد اللبناني للفروسية',
+      'العراق': 'الاتحاد العراقي للفروسية',
+      'فلسطين': 'الاتحاد الفلسطيني للفروسية',
+      'تركيا': 'الاتحاد التركي للفروسية'
+    };
+
     const users = await db.query('SELECT id, username, email, role, full_name, country, status, last_login FROM users');
-    res.json(users.rows);
+    
+    const usersWithFederation = users.rows.map(user => ({
+      ...user,
+      federation: federationMap[user.country] || 'بدون اتحاد'
+    }));
+
+    res.json(usersWithFederation);
   } catch (error) {
     console.error('Error fetching God Eye users:', error);
     res.status(500).json({ message: 'خطأ في جلب المستخدمين لعين الإله.' });
@@ -264,6 +290,20 @@ app.post('/api/admin/godeye/user/:id/status', checkCountryIsolation, async (req,
   } catch (error) {
     console.error('Error updating user status:', error);
     res.status(500).json({ message: 'خطأ في تحديث حالة المستخدم.' });
+  }
+});
+
+app.post('/api/admin/godeye/user/:id/password', checkCountryIsolation, async (req, res) => {
+  if (req.user.role !== 'admin') return res.status(403).json({ message: "Access Denied" });
+  const { id } = req.params;
+  const { password } = req.body;
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await db.query('UPDATE users SET password_hash = $1 WHERE id = $2', [hashedPassword, id]);
+    res.json({ message: `تم تحديث كلمة مرور المستخدم ${id} بنجاح.` });
+  } catch (error) {
+    console.error('Error updating user password:', error);
+    res.status(500).json({ message: 'خطأ في تحديث كلمة المرور.' });
   }
 });
 
