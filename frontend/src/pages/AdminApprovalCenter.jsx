@@ -13,7 +13,7 @@ const AdminApprovalCenter = () => {
 
   const fetchApprovals = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('rasan_token');
       const response = await axios.get('/api/admin/approvals', {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -28,7 +28,7 @@ const AdminApprovalCenter = () => {
   const handleApprove = async (req) => {
     setProcessingId(req.id);
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('rasan_token');
       await axios.post('/api/admin/approve-user', {
         userId: req.id,
         userEmail: req.email || 'user@example.com', // In real app, this comes from DB

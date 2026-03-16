@@ -231,6 +231,153 @@ app.post('/api/admin/approve-user', checkCountryIsolation, async (req, res) => {
   }
 });
 
+// ============ New Routes for Dynamic Data ============
+
+// Get Races
+app.get('/api/races', checkCountryIsolation, async (req, res) => {
+  try {
+    const result = await db.query(
+      'SELECT id, name, date, location, status, image FROM races WHERE status = $1 ORDER BY date DESC',
+      ['active']
+    );
+    
+    // إذا لم تكن هناك سباقات في قاعدة البيانات، أرجع بيانات افتراضية
+    if (result.rows.length === 0) {
+      return res.json([
+        {
+          id: 1,
+          name: 'كأس رَسَن الدولي للجمال',
+          date: '20 رمضان 1447',
+          location: 'إسطبلات رَسَن الملكية',
+          status: 'open',
+          image: 'https://images.unsplash.com/photo-1598974357851-98166a9d9b5b?auto=format&fit=crop&w=800'
+        }
+      ]);
+    }
+    
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching races:', error);
+    res.status(500).json({ message: 'خطأ في جلب السباقات.' });
+  }
+});
+
+// Get User Points
+app.get('/api/user/:userId/points', checkCountryIsolation, async (req, res) => {
+  try {
+    const result = await db.query(
+      'SELECT COALESCE(SUM(points), 0) as points FROM user_points WHERE user_id = $1',
+      [req.params.userId]
+    );
+    
+    res.json({ points: result.rows[0]?.points || 0 });
+  } catch (error) {
+    console.error('Error fetching user points:', error);
+    res.json({ points: 0 });
+  }
+});
+
+// Get Marketplace Products
+app.get('/api/marketplace/products', checkCountryIsolation, async (req, res) => {
+  try {
+    const result = await db.query(
+      'SELECT id, name, description, price, image FROM products WHERE status = $1 ORDER BY created_at DESC',
+      ['active']
+    );
+    
+    // إذا لم تكن هناك منتجات في قاعدة البيانات، أرجع بيانات افتراضية
+    if (result.rows.length === 0) {
+      return res.json([
+        {
+          id: 1,
+          name: 'سرج جلدي فاخر - نخب أول',
+          description: 'سرج مصنوع من أفضل أنواع الجلد الإيطالي',
+          price: 1200,
+          image: 'https://img.icons8.com/ios/100/D4AF37/saddle.png'
+        },
+        {
+          id: 2,
+          name: 'لجام ملكي مزخرف',
+          description: 'لجام مزخرف بالذهب والفضة',
+          price: 800,
+          image: 'https://img.icons8.com/ios/100/D4AF37/bridle.png'
+        },
+        {
+          id: 3,
+          name: 'أغطية خيل حريرية',
+          description: 'أغطية حريرية فاخرة لحماية الخيل',
+          price: 500,
+          image: 'https://img.icons8.com/ios/100/D4AF37/blanket.png'
+        }
+      ]);
+    }
+    
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).json({ message: 'خطأ في جلب المنتجات.' });
+  }
+});
+
+// Get God Eye Dashboard Data (Admin Only)
+app.get('/api/admin/godeye/users', checkCountryIsolation, async (req, res) => {
+  if (req.user.role !== 'admin') return res.status(403).json({ message: "Access Denied" });
+  
+  try {
+    const result = await db.query(
+      'SELECT id, username, email, role, full_name, country, status, last_login FROM users ORDER BY created_at DESC'
+    );
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ message: 'خطأ في جلب بيانات المستخدمين.' });
+  }
+});
+
+app.get('/api/admin/godeye/stats', checkCountryIsolation, async (req, res) => {
+  if (req.user.role !== 'admin') return res.status(403).json({ message: "Access Denied" });
+  
+  try {
+    const usersResult = await db.query('SELECT COUNT(*) as total FROM users');
+    const revenueResult = await db.query('SELECT COALESCE(SUM(amount), 0) as total FROM transactions WHERE status = $1', ['completed']);
+    
+    res.json({
+      total_users: parseInt(usersResult.rows[0]?.total || 0),
+      total_revenue: parseFloat(revenueResult.rows[0]?.total || 0)
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'خطأ في جلب الإحصائيات.' });
+  }
+});
+
+// Admin Password Reset
+app.post('/api/admin/godeye/user/:userId/password', checkCountryIsolation, async (req, res) => {
+  if (req.user.role !== 'admin') return res.status(403).json({ message: "Access Denied" });
+  
+  const { password } = req.body;
+  
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await db.query('UPDATE users SET password_hash = $1 WHERE id = $2', [hashedPassword, req.params.userId]);
+    res.json({ message: 'تم تحديث كلمة المرور بنجاح.' });
+  } catch (error) {
+    res.status(500).json({ message: 'خطأ في تحديث كلمة المرور.' });
+  }
+});
+
+// Admin User Status Change
+app.post('/api/admin/godeye/user/:userId/status', checkCountryIsolation, async (req, res) => {
+  if (req.user.role !== 'admin') return res.status(403).json({ message: "Access Denied" });
+  
+  const { status } = req.body;
+  
+  try {
+    await db.query('UPDATE users SET status = $1 WHERE id = $2', [status, req.params.userId]);
+    res.json({ message: 'تم تحديث حالة المستخدم بنجاح.' });
+  } catch (error) {
+    res.status(500).json({ message: 'خطأ في تحديث حالة المستخدم.' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
