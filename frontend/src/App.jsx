@@ -11,11 +11,13 @@ import UnauthorizedPage from './pages/UnauthorizedPage';
 
 // Import Components as Pages
 import GodEyeDashboard from './components/GodEyeDashboard';
+import AdminMasterDashboard from './components/AdminMasterDashboard';
 import RasanAnalytics from './components/RasanAnalytics';
 import RasanAuction from './components/RasanAuction';
 import RasanCheckout from './components/RasanCheckout';
 import RasanNotifications from './components/RasanNotifications';
 import FederationAuthorityPortal from './components/FederationAuthorityPortal';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 // Import Navigation and ProtectedRoute
 import Navigation from './components/Navigation';
@@ -32,6 +34,7 @@ const App = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
           
           {/* Public Routes */}
@@ -105,12 +108,20 @@ const App = () => {
             } 
           />
           
-          {/* Secret Admin Route */}
+          {/* Admin Routes */}
           <Route 
             path="/rasan-master-control" 
             element={
               <ProtectedRoute requiredRole="admin">
                 <GodEyeDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/dashboard" 
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminMasterDashboard />
               </ProtectedRoute>
             } 
           />

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, ChevronRight, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
@@ -15,14 +16,18 @@ const ForgotPasswordPage = () => {
     setError('');
     setMessage('');
 
+    if (!email) {
+      setError('يرجى إدخال البريد الإلكتروني');
+      setLoading(false);
+      return;
+    }
+
     try {
-      // Mock API call for password reset
-      setTimeout(() => {
-        setMessage('إذا كان البريد مسجلاً لدينا، فستصلك تعليمات استعادة كلمة المرور قريباً.');
-        setLoading(false);
-      }, 1500);
+      const response = await axios.post('/api/auth/forgot-password', { email });
+      setMessage('إذا كان البريد مسجلاً لدينا، فستصلك تعليمات استعادة كلمة المرور قريباً.');
     } catch (err) {
       setError('حدث خطأ، يرجى المحاولة مرة أخرى.');
+    } finally {
       setLoading(false);
     }
   };

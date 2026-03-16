@@ -33,6 +33,7 @@ const Navigation = () => {
     ];
 
     const adminItems = [
+      { label: 'لوحة التحكم المطلقة', path: '/admin/dashboard', roles: ['admin'] },
       { label: 'مركز الاعتمادات', path: '/admin/approvals', roles: ['admin'] },
       { label: 'بوابة الاتحادات', path: '/federation', roles: ['federation', 'admin'] },
       { label: 'التقارير المالية', path: '/analytics', roles: ['admin'] },
