@@ -3,7 +3,7 @@ services:
     name: rasan-platform
     env: node
     plan: free
-    buildCommand: npm install && npx vite build && mkdir -p public && cp -r dist/* public/ 2>/dev/null || true
+    buildCommand: npm install && npx vite build && rm -rf public/assets && mkdir -p public && cp -r dist/* public/ && echo "Build Cleaned and Updated"
     startCommand: node server.js
     envVars:
       - key: NODE_ENV

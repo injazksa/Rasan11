@@ -58,7 +58,7 @@ const AdminMasterDashboard = () => {
       const headers = { Authorization: `Bearer ${token}` };
 
       const [usersResponse, statsResponse, approvalsResponse] = await Promise.all([
-        axios.get('/api/admin/users', {
+        axios.get('/api/admin/godeye/users', {
           params: { role: filterRole, status: filterStatus, country: filterCountry },
           headers
         }),
