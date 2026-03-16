@@ -124,7 +124,7 @@ const RegisterPage = () => {
         {/* Left Side - Branding (Lighter & More Elegant) */}
         <div className="md:w-2/5 bg-[#FDFCFB] p-8 md:p-12 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-l border-[#D4AF37]/10">
           <img 
-            src={`/rasan_logo_v2.png?t=${Date.now()}`}
+            src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663030900418/bhxCMGsfVJBQVCWd.png"
             alt="Rasan Logo" 
             className="w-64 md:w-80 mb-8 drop-shadow-xl"
             onError={(e) => {

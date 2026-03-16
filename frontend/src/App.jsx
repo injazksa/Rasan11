@@ -27,7 +27,7 @@ const Navigation = () => {
     <nav className="bg-[#2C2C2C] text-[#D4AF37] p-4 flex flex-wrap justify-center items-center gap-6 sticky top-0 z-50 shadow-lg border-b border-[#D4AF37]/20" dir="rtl">
       <div className="flex items-center gap-2 ml-6">
         <img 
-          src={`/logo_clean.png?t=${Date.now()}`}
+          src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663030900418/bhxCMGsfVJBQVCWd.png"
           alt="Rasan" 
           className="h-8"
           onError={(e) => {

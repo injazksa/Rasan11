@@ -61,8 +61,8 @@ const initializeAdminAccount = async () => {
       // إنشاء حساب المدير الجديد
       const hashedPassword = await bcrypt.hash(adminPassword, 10);
       await db.query(
-        'INSERT INTO users (username, email, password_hash, role, status, full_name, country, city) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-        ['admin', adminEmail, hashedPassword, 'admin', 'active', 'المدير العام', 'السعودية', 'الرياض']
+        'INSERT INTO users (username, email, password_hash, role, status, full_name, country, city, phone) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+        ['admin', adminEmail, hashedPassword, 'admin', 'active', 'المدير العام', 'السعودية', 'الرياض', '0500000000']
       );
       console.log('✅ تم إنشاء حساب المدير بنجاح');
       console.log(`📧 البريد: ${adminEmail}`);

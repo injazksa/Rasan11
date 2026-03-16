@@ -135,7 +135,7 @@ const LoginPage = () => {
             className="cursor-pointer transition-all duration-300 hover:scale-105 inline-block"
           >
             <img 
-              src={`/rasan_logo_v2.png?t=${Date.now()}`}
+              src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663030900418/bhxCMGsfVJBQVCWd.png"
               alt="Rasan Logo" 
               className="w-64 md:w-80 mb-8 drop-shadow-xl"
               onError={(e) => {
