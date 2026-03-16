@@ -123,7 +123,7 @@ const RegisterPage = () => {
         
         {/* Left Side - Branding */}
         <div className="md:w-1/3 bg-[#2C2C2C] p-8 md:p-12 text-[#D4AF37] flex flex-col items-center justify-center text-center border-b-8 md:border-b-0 md:border-l-8 border-[#D4AF37]">
-          <img src="/rasan_logo.png" alt="Rasan Logo" className="w-48 md:w-64 mb-6 drop-shadow-2xl" />
+          <img src="/rasan_logo_v2.png?t=2026" alt="Rasan Logo" className="w-48 md:w-64 mb-6 drop-shadow-2xl" />
           <h2 className="text-2xl md:text-3xl font-serif mb-4">منظومة رَسَن</h2>
           <p className="text-xs leading-relaxed opacity-70 uppercase tracking-widest">السيادة الرقمية لعالم الفروسية</p>
         </div>
@@ -132,7 +132,7 @@ const RegisterPage = () => {
         <div className="md:w-2/3 p-8 md:p-12">
           <div className="flex justify-between items-center mb-8">
             <h3 className="text-xl md:text-2xl font-bold text-[#2C2C2C]">إنشاء حساب ملكي</h3>
-            <img src="/rasan_logo.png" alt="Rasan" className="h-12 md:hidden" />
+            <img src="/rasan_logo_v2.png?t=2026" alt="Rasan" className="h-12 md:hidden" />
           </div>
           
           {error && (
