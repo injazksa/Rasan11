@@ -12,20 +12,37 @@ const RoleCard = ({ label, role, active, onClick }) => (
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
-    fullName: '',
+    full_name: '',
+    username: '',
     email: '',
     password: '',
-    role: 'OWNER'
+    phone: '',
+    country: '',
+    role: 'owner'
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  const countries = [
+    { name: 'السعودية', federation: 'الاتحاد السعودي للفروسية' },
+    { name: 'الأردن', federation: 'اتحاد الفروسية الملكي الأردني' },
+    { name: 'قطر', federation: 'الاتحاد القطري للفروسية' },
+    { name: 'البحرين', federation: 'الاتحاد الملكي البحريني للفروسية' },
+    { name: 'الإمارات', federation: 'اتحاد الإمارات للفروسية والسباق' },
+    { name: 'الكويت', federation: 'الاتحاد الكويتي للفروسية' },
+    { name: 'مصر', federation: 'الاتحاد المصري للفروسية' },
+    { name: 'تركيا', federation: 'الاتحاد التركي للفروسية' },
+    { name: 'ليبيا', federation: 'الاتحاد الليبي للفروسية' },
+    { name: 'سوريا', federation: 'الاتحاد العربي السوري للفروسية' },
+    { name: 'لبنان', federation: 'الاتحاد اللبناني للفروسية' }
+  ];
+
   const roles = [
-    { label: 'مالك خيل', value: 'OWNER' },
-    { label: 'اتحاد رسمي', value: 'FEDERATION' },
-    { label: 'طبيب معتمد', value: 'DOCTOR' },
-    { label: 'تاجر معدات', value: 'MERCHANT' }
+    { label: 'مالك خيل', value: 'owner' },
+    { label: 'اتحاد رسمي', value: 'federation' },
+    { label: 'طبيب معتمد', value: 'doctor' },
+    { label: 'تاجر معدات', value: 'vendor' }
   ];
 
   const handleInputChange = (e) => {
@@ -42,17 +59,33 @@ const RegisterPage = () => {
     setLoading(true);
     setError('');
 
+    // Basic validation
+    if (!formData.country) {
+      setError('يرجى اختيار الدولة للربط بالاتحاد المعني');
+      setLoading(false);
+      return;
+    }
+
     try {
       const apiUrl = window.location.origin.includes('localhost') 
         ? 'http://localhost:5000/api/auth/register' 
         : '/api/auth/register';
+
+      // Ensure username is set (using email prefix if empty)
+      const payload = {
+        ...formData,
+        username: formData.username || formData.email.split('@')[0],
+        city: 'N/A' // Default city as it's required by backend but not in form
+      };
+
+      console.log('Sending Payload:', payload);
 
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
 
       const data = await response.json();
@@ -74,23 +107,30 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9F8F6] flex items-center justify-center p-8">
-      <div className="max-w-2xl w-full bg-white rounded-[3rem] shadow-2xl flex flex-col md:flex-row overflow-hidden">
-        <div className="md:w-1/3 bg-[#2C2C2C] p-10 text-[#D4AF37] flex flex-col justify-center border-l-8 border-[#D4AF37]">
-          <h2 className="text-3xl font-serif mb-4">انضم للنخبة</h2>
-          <p className="text-xs leading-relaxed opacity-70 uppercase tracking-widest">كن جزءاً من أكبر نظام رقمي للفروسية في العالم.</p>
+    <div className="min-h-screen bg-[#F9F8F6] flex items-center justify-center p-4 md:p-8" dir="rtl">
+      <div className="max-w-4xl w-full bg-white rounded-[2rem] md:rounded-[3rem] shadow-2xl flex flex-col md:flex-row overflow-hidden border border-[#D4AF37]/10">
+        
+        {/* Left Side - Branding */}
+        <div className="md:w-1/3 bg-[#2C2C2C] p-8 md:p-12 text-[#D4AF37] flex flex-col items-center justify-center text-center border-b-8 md:border-b-0 md:border-l-8 border-[#D4AF37]">
+          <img src="/logo_clean.png" alt="Rasan Logo" className="w-32 md:w-48 mb-6 drop-shadow-lg" />
+          <h2 className="text-2xl md:text-3xl font-serif mb-4">منظومة رَسَن</h2>
+          <p className="text-xs leading-relaxed opacity-70 uppercase tracking-widest">السيادة الرقمية لعالم الفروسية</p>
         </div>
 
-        <div className="md:w-2/3 p-12">
-          <h3 className="text-xl font-bold mb-8 text-[#2C2C2C] text-right">إنشاء حساب جديد</h3>
+        {/* Right Side - Form */}
+        <div className="md:w-2/3 p-8 md:p-12">
+          <div className="flex justify-between items-center mb-8">
+            <h3 className="text-xl md:text-2xl font-bold text-[#2C2C2C]">إنشاء حساب ملكي</h3>
+            <img src="/logo_clean.png" alt="Rasan" className="h-8 md:hidden" />
+          </div>
           
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm text-right">
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm text-right animate-pulse">
               {error}
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
             {roles.map((role) => (
               <RoleCard 
                 key={role.value}
@@ -103,15 +143,27 @@ const RegisterPage = () => {
           </div>
 
           <form className="space-y-4" onSubmit={handleRegister}>
-            <input 
-              type="text" 
-              name="fullName"
-              placeholder="الاسم الكامل" 
-              value={formData.fullName}
-              onChange={handleInputChange}
-              required
-              className="w-full p-4 bg-gray-50 rounded-2xl outline-none border-none focus:ring-2 ring-[#D4AF37]/20 text-right" 
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input 
+                type="text" 
+                name="full_name"
+                placeholder="الاسم الكامل" 
+                value={formData.full_name}
+                onChange={handleInputChange}
+                required
+                className="w-full p-4 bg-gray-50 rounded-2xl outline-none border border-transparent focus:border-[#D4AF37] focus:ring-2 ring-[#D4AF37]/10 text-right transition-all" 
+              />
+              <input 
+                type="text" 
+                name="phone"
+                placeholder="رقم الهاتف" 
+                value={formData.phone}
+                onChange={handleInputChange}
+                required
+                className="w-full p-4 bg-gray-50 rounded-2xl outline-none border border-transparent focus:border-[#D4AF37] focus:ring-2 ring-[#D4AF37]/10 text-right transition-all" 
+              />
+            </div>
+
             <input 
               type="email" 
               name="email"
@@ -119,28 +171,51 @@ const RegisterPage = () => {
               value={formData.email}
               onChange={handleInputChange}
               required
-              className="w-full p-4 bg-gray-50 rounded-2xl outline-none border-none focus:ring-2 ring-[#D4AF37]/20 text-right" 
+              className="w-full p-4 bg-gray-50 rounded-2xl outline-none border border-transparent focus:border-[#D4AF37] focus:ring-2 ring-[#D4AF37]/10 text-right transition-all" 
             />
-            <input 
-              type="password" 
-              name="password"
-              placeholder="كلمة المرور" 
-              value={formData.password}
-              onChange={handleInputChange}
-              required
-              className="w-full p-4 bg-gray-50 rounded-2xl outline-none border-none focus:ring-2 ring-[#D4AF37]/20 text-right" 
-            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <select 
+                name="country"
+                value={formData.country}
+                onChange={handleInputChange}
+                required
+                className="w-full p-4 bg-gray-50 rounded-2xl outline-none border border-transparent focus:border-[#D4AF37] focus:ring-2 ring-[#D4AF37]/10 text-right transition-all appearance-none"
+              >
+                <option value="">اختر الدولة...</option>
+                {countries.map((c) => (
+                  <option key={c.name} value={c.name}>{c.name}</option>
+                ))}
+              </select>
+
+              <input 
+                type="password" 
+                name="password"
+                placeholder="كلمة المرور" 
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+                className="w-full p-4 bg-gray-50 rounded-2xl outline-none border border-transparent focus:border-[#D4AF37] focus:ring-2 ring-[#D4AF37]/10 text-right transition-all" 
+              />
+            </div>
+
+            {formData.country && (
+              <div className="p-3 bg-[#FAF6E9] rounded-xl border border-[#D4AF37]/20 text-[10px] text-[#B8962E] text-center font-bold">
+                سيتم ربط حسابك تلقائياً بـ: {countries.find(c => c.name === formData.country)?.federation}
+              </div>
+            )}
+
             <button 
               type="submit"
               disabled={loading}
-              className="w-full bg-[#D4AF37] text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-[#B8962E] transition-all disabled:opacity-50"
+              className="w-full bg-[#D4AF37] text-[#2C2C2C] py-4 rounded-2xl font-bold shadow-lg hover:bg-[#B8962E] hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 mt-4"
             >
-              {loading ? 'جاري المعالجة...' : 'تأكيد الانضمام'}
+              {loading ? 'جاري توثيق البيانات...' : 'تأكيد الانضمام للإمبراطورية'}
             </button>
           </form>
           
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500">لديك حساب بالفعل؟ <a href="/login" className="text-[#D4AF37] font-bold">سجل دخول</a></p>
+          <div className="mt-8 text-center">
+            <p className="text-sm text-gray-500">لديك حساب بالفعل؟ <a href="/login" className="text-[#D4AF37] font-bold hover:underline">سجل دخول من هنا</a></p>
           </div>
         </div>
       </div>
