@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Horse, Ruler, Scale, HeartPulse, ShieldCheck, QrCode, CalendarDays, Award } from 'lucide-react';
+import { Ruler, Scale, HeartPulse, ShieldCheck, QrCode, CalendarDays, Award } from 'lucide-react';
 
 const HorsePassportPage = () => {
   const { id } = useParams();
@@ -55,7 +55,7 @@ const HorsePassportPage = () => {
         {/* Header Section */}
         <div className="bg-[#2C2C2C] text-white p-8 flex items-center justify-between">
           <h1 className="text-4xl font-bold tracking-wider flex items-center gap-3">
-            <Horse size={40} className="text-[#D4AF37]" /> الجواز الرقمي للخيل
+            <Award size={40} className="text-[#D4AF37]" /> الجواز الرقمي للخيل
           </h1>
           {horse.qr_code_url && (
             <img src={horse.qr_code_url} alt="QR Code" className="w-24 h-24 rounded-lg border border-[#D4AF37]" />
@@ -78,7 +78,7 @@ const HorsePassportPage = () => {
         <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-6">
             <DetailItem icon={<Ruler size={20} />} label="الاسم" value={horse.name} />
-            <DetailItem icon={<Horse size={20} />} label="السلالة" value={horse.breed} />
+            <DetailItem icon={<Award size={20} />} label="السلالة" value={horse.breed} />
             <DetailItem icon={<CalendarDays size={20} />} label="العمر" value={`${horse.age} سنوات`} />
             <DetailItem icon={<Ruler size={20} />} label="الطول" value={`${horse.height} سم`} />
             <DetailItem icon={<Scale size={20} />} label="الوزن" value={`${horse.weight} كجم`} />
