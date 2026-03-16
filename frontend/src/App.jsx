@@ -26,7 +26,14 @@ const Navigation = () => {
   return (
     <nav className="bg-[#2C2C2C] text-[#D4AF37] p-4 flex flex-wrap justify-center items-center gap-6 sticky top-0 z-50 shadow-lg border-b border-[#D4AF37]/20" dir="rtl">
       <div className="flex items-center gap-2 ml-6">
-        <img src="/logo_clean.png" alt="Rasan" className="h-8" />
+        <img 
+          src={`/logo_clean.png?t=${Date.now()}`}
+          alt="Rasan" 
+          className="h-8"
+          onError={(e) => {
+            e.target.src = 'https://via.placeholder.com/50x50?text=R';
+          }}
+        />
         <span className="font-serif font-bold text-lg tracking-widest">رَسَن</span>
       </div>
       <Link to="/race-arena" className="hover:text-white transition-colors font-bold">ميدان السباق</Link>

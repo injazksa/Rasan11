@@ -129,15 +129,18 @@ const LoginPage = () => {
         
         {/* Left Side - Branding (Consistent with Register Page) */}
         <div className="md:w-2/5 bg-[#FDFCFB] p-8 md:p-12 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-l border-[#D4AF37]/10">
-          <div 
+          <div
             data-logo
             onClick={handleLogoClick}
             className="cursor-pointer transition-all duration-300 hover:scale-105 inline-block"
           >
             <img 
-              src="/rasan_logo_v2.png?t=2026" 
+              src={`/rasan_logo_v2.png?t=${Date.now()}`}
               alt="Rasan Logo" 
-              className="w-64 md:w-80 mb-8 drop-shadow-xl" 
+              className="w-64 md:w-80 mb-8 drop-shadow-xl"
+              onError={(e) => {
+                e.target.src = 'https://via.placeholder.com/300x300?text=Rasan+Logo';
+              }}
             />
           </div>
           <h2 className="text-3xl md:text-4xl font-serif mb-4 text-[#2C2C2C]">منظومة رَسَن</h2>

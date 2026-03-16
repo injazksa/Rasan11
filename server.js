@@ -47,6 +47,39 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(express.static(path.join(__dirname, './public')));
 
+// ============ Auto-Seed Admin Account ============
+// هذا الكود يضمن وجود حساب المدير في قاعدة البيانات عند تشغيل السيرفر
+const initializeAdminAccount = async () => {
+  try {
+    const adminEmail = 'admin@rasan.app';
+    const adminPassword = 'admin_rasan_2026';
+    
+    // التحقق من وجود حساب المدير
+    const existingAdmin = await db.query('SELECT id FROM users WHERE email = $1', [adminEmail]);
+    
+    if (existingAdmin.rows.length === 0) {
+      // إنشاء حساب المدير الجديد
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
+      await db.query(
+        'INSERT INTO users (username, email, password_hash, role, status, full_name, country, city) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+        ['admin', adminEmail, hashedPassword, 'admin', 'active', 'المدير العام', 'السعودية', 'الرياض']
+      );
+      console.log('✅ تم إنشاء حساب المدير بنجاح');
+      console.log(`📧 البريد: ${adminEmail}`);
+      console.log(`🔐 كلمة المرور: ${adminPassword}`);
+    } else {
+      console.log('✅ حساب المدير موجود بالفعل');
+    }
+  } catch (error) {
+    console.error('⚠️ خطأ في تهيئة حساب المدير:', error.message);
+  }
+};
+
+// استدعاء دالة التهيئة عند بدء السيرفر
+setTimeout(() => {
+  initializeAdminAccount();
+}, 2000);
+
 // Sovereignty Middleware (Country Isolation)
 const checkCountryIsolation = (req, res, next) => {
   const authHeader = req.headers['authorization'];
