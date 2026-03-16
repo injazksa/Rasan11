@@ -13,8 +13,18 @@ export default defineConfig({
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true,
+        drop_console: false, // أبقينا الكونسول مؤقتاً لتشخيص أي مشاكل في الإنتاج
       },
     },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom', 'socket.io-client'],
+        },
+      },
+    },
+  },
+  optimizeDeps: {
+    include: ['socket.io-client'],
   },
 })
